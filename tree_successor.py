@@ -14,7 +14,8 @@ class Node(object):
   @left.setter
   def left(self, node):
     self._left = node
-    node._parent = self
+    if node:
+      node._parent = self
 
   @property
   def right(self):
@@ -23,7 +24,8 @@ class Node(object):
   @right.setter
   def right(self, node):
     self._right = node
-    node._parent = self
+    if node:
+      node._parent = self
 
   @property
   def parent(self):
@@ -45,6 +47,31 @@ def Insert(root, node):
     else:
       root.right = node
 
+
+def Delete(root, node):
+  if node.left is None:
+    root = Transplant(root, node, node.right)
+  elif node.right is None:
+    root = Transplant(root, node, node.left)
+  else:
+    new_head = LeastElement(node.right)
+    if node.right != new_head:
+      root = Transplant(root, new_head, new_head.right)
+      new_head.right = node.right
+    root = Transplant(root, node, new_head)
+    new_head.left = node.left
+  return root
+
+
+def Transplant(root, old, new):
+  if old == root:
+    return new
+  if old.parent.left == old:
+    old.parent.left = new
+  else:
+    old.parent.right = new
+  return root
+  
 
 def Linearize(node):
   left = Linearize(node.left) if node.left else []
@@ -85,7 +112,7 @@ def IterativeRightAncestor(node):
     else:
       node = node.parent
 
-
+  
 import unittest
 
 
@@ -113,3 +140,69 @@ class TestTree(unittest.TestCase):
       self.assertEqual(sorted_values[i + 1],
                        Successor(self.nodes[sorted_values[i]]).value)
     self.assertIsNone(Successor(self.nodes[15]))
+
+  def test_DeleteRoot(self):
+    root = Node(0)
+    self.assertEqual(None, Delete(root, root))
+
+  def test_DeleteLeftLineTail(self):
+    root = Node(0)
+    left = Node(-1)
+    Insert(root, left)
+    self.assertEqual([0], Linearize(Delete(root, left)))
+
+  def test_DeleteLeftLineHead(self):
+    root = Node(0)
+    left = Node(-1)
+    Insert(root, left)
+    self.assertEqual([-1], Linearize(Delete(root, root)))
+
+  def test_DeleteLeftLineMiddle(self):
+    root = Node(0)
+    middle = Node(-1)
+    left = Node(-2)
+    Insert(root, middle)
+    Insert(root, left)
+    self.assertEqual([-2, 0], Linearize(Delete(root, middle)))
+
+  def test_DeleteRightLineTail(self):
+    root = Node(0)
+    right = Node(1)
+    Insert(root, right)
+    self.assertEqual([0], Linearize(Delete(root, right)))
+
+  def test_DeleteRightLineHead(self):
+    root = Node(0)
+    right = Node(1)
+    Insert(root, right)
+    self.assertEqual([1], Linearize(Delete(root, root)))
+
+  def test_DeleteRightLineMiddle(self):
+    root = Node(0)
+    middle = Node(1)
+    right = Node(2)
+    Insert(root, middle)
+    Insert(root, right)
+    self.assertEqual([0, 2], Linearize(Delete(root, middle)))
+
+  def test_DeleteNonrootNodeWithBothChildren(self):
+    root = Node(0)
+    left = Node(-1)
+    Insert(root, left)
+    right = Node(1)
+    Insert(root, right)
+    right_right = Node(2)
+    Insert(root, right_right)
+    right_left = Node(0.5)
+    Insert(root, right_left)
+    self.assertEqual([-1, 0, 0.5, 2], Linearize(Delete(root, right)))
+
+  def test_DeleteNonrootNodeWithBothChildren2(self):
+    root = Node(0)
+    left = Node(-1)
+    Insert(root, left)
+    right = Node(1)
+    Insert(root, right)
+    right_right = Node(2)
+    Insert(root, right_right)
+    self.assertEqual([-1, 0, 2], Linearize(Delete(root, right)))
