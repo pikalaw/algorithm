@@ -98,6 +98,21 @@ class Tree(object):
     self.DepthFirst(Visit)
     return depth['max'] - depth['min'] <= 1
 
+  @property
+  def height(self):
+    if not self.root:
+      return 0
+
+    max_height = [0]
+
+    def Visit(node, level):
+      if node.is_leaf:
+        if max_height[0] < level:
+          max_height[0] = level
+
+    self.DepthFirst(Visit)
+    return max_height[0] + 1
+
   def Insert(self, node):
     if not self.root:
       self.root = node
@@ -573,6 +588,25 @@ class TestTree(unittest.TestCase):
     tree.Insert(Node(11))
     self.assertFalse(tree.balanced)
 
+  def test_height(self):
+    tree = Tree()
+    self.assertEqual(0, tree.height)
+    
+    tree.Insert(Node(0))
+    self.assertEqual(1, tree.height)
+
+    tree.Insert(Node(-1))
+    self.assertEqual(2, tree.height)
+
+    tree.Insert(Node(5))
+    self.assertEqual(2, tree.height)
+    
+    tree.Insert(Node(10))
+    self.assertEqual(3, tree.height)
+
+    tree.Insert(Node(11))
+    self.assertEqual(4, tree.height)
+    
 
 def IsNode(value):
 
