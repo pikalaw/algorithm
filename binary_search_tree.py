@@ -34,6 +34,10 @@ class Node(object):
     if node:
       node.parent = self
 
+  @property
+  def is_leaf(self):
+    return self.left is None and self.right is None
+
   def __str__(self):
     return '{}'.format(self.value)
 
@@ -76,6 +80,23 @@ class Tree(object):
       return Tree(self.root.right).greatest
     else:
       return self.root
+
+  @property
+  def balanced(self):
+    if not self.root:
+      return True
+
+    depth = {'min': None, 'max': None}
+
+    def Visit(node, level):
+      if node.is_leaf:
+        if depth['min'] is None or depth['min'] > level:
+          depth['min'] = level 
+        if depth['max'] is None or depth['max'] < level:
+          depth['max'] = level 
+
+    self.DepthFirst(Visit)
+    return depth['max'] - depth['min'] <= 1
 
   def Insert(self, node):
     if not self.root:
@@ -170,7 +191,7 @@ class Tree(object):
       return self.LeftAncestor(node) 
 
   def RightAncestor(self, node):
-    if not node.parent:
+    if node == self.root:
       return None
     elif node.parent.left and node.parent.left == node:
       return node.parent
@@ -178,47 +199,56 @@ class Tree(object):
       return self.RightAncestor(node.parent)
 
   def LeftAncestor(self, node):
-    if not node.parent:
+    if node == self.root:
       return None
     elif node.parent.right and node.parent.right == node:
       return node.parent
     else:
       return self.LeftAncestor(node.parent)
 
-  def DepthFirst(self, callback):
+  def DepthFirst(self, visit, level=0):
     if self.root:
-      Tree(self.root.left).DepthFirst(callback)
-      callback(self.root)
-      Tree(self.root.right).DepthFirst(callback)
+      Tree(self.root.left).DepthFirst(visit, level + 1)
+      visit(self.root, level)
+      Tree(self.root.right).DepthFirst(visit, level + 1)
 
-  def BreadthFirst(self, callback):
+  def BreadthFirst(self, visit):
     queue = []
     if self.root:
-      queue.append(self.root)
+      queue.append((self.root, 0))
     while queue:
-      node = queue.pop(0)
-      callback(node)
+      node, level = queue.pop(0)
+      visit(node, level)
       if node.left:
-        queue.append(node.left)
+        queue.append((node.left, level + 1))
       if node.right:
-        queue.append(node.right)
+        queue.append((node.right, level + 1))
 
-  def IterativeDeepening(self, callback):
-    level = 0
-    while self._DepthFirstWithLevel(callback, level):
-      level += 1
+  def IterativeDeepening(self, visit):
+    max_level = 0
+    while self._DepthFirst(visit, max_level, 0):
+      max_level += 1
 
-  def _DepthFirstWithLevel(self, callback, level):
+  def Linearize(self):
+    nodes = []
+    
+    def Gather(node, unused_level):
+      nodes.append(node.value)
+
+    self.DepthFirst(Gather)
+    return nodes
+
+  def _DepthFirst(self, visit, max_level, level):
     if self.root:
-      left_visited = Tree(self.root.left)._DepthFirstWithLevel(callback,
-                                                               level - 1)
-      if level == 0:
-        callback(self.root)
+      left_visited = Tree(self.root.left)._DepthFirst(
+          visit, max_level, level + 1)
+      if level == max_level:
+        visit(self.root, level)
         self_visited = True
       else:
         self_visited = False
-      right_visited = Tree(self.root.right)._DepthFirstWithLevel(callback,
-                                                                 level - 1)
+      right_visited = Tree(self.root.right)._DepthFirst(
+          visit, max_level, level + 1)
       return left_visited or self_visited or right_visited
     else:
       return False
@@ -453,13 +483,13 @@ class TestTree(unittest.TestCase):
 
     m = mox.Mox()
     mock_visit = m.CreateMockAnything()
-    mock_visit.__call__(mox.Func(IsNode(-2)))
-    mock_visit.__call__(mox.Func(IsNode(-1)))
-    mock_visit.__call__(mox.Func(IsNode(0)))
-    mock_visit.__call__(mox.Func(IsNode(1)))
-    mock_visit.__call__(mox.Func(IsNode(2)))
-    mock_visit.__call__(mox.Func(IsNode(5)))
-    mock_visit.__call__(mox.Func(IsNode(10)))
+    mock_visit.__call__(mox.Func(IsNode(-2)), 2)
+    mock_visit.__call__(mox.Func(IsNode(-1)), 1)
+    mock_visit.__call__(mox.Func(IsNode(0)), 0)
+    mock_visit.__call__(mox.Func(IsNode(1)), 2)
+    mock_visit.__call__(mox.Func(IsNode(2)), 3)
+    mock_visit.__call__(mox.Func(IsNode(5)), 1)
+    mock_visit.__call__(mox.Func(IsNode(10)), 2)
     m.ReplayAll()
 
     tree.DepthFirst(mock_visit)
@@ -477,13 +507,13 @@ class TestTree(unittest.TestCase):
 
     m = mox.Mox()
     mock_visit = m.CreateMockAnything()
-    mock_visit.__call__(mox.Func(IsNode(0)))
-    mock_visit.__call__(mox.Func(IsNode(1)))
-    mock_visit.__call__(mox.Func(IsNode(2)))
-    mock_visit.__call__(mox.Func(IsNode(3)))
-    mock_visit.__call__(mox.Func(IsNode(4)))
-    mock_visit.__call__(mox.Func(IsNode(5)))
-    mock_visit.__call__(mox.Func(IsNode(6)))
+    mock_visit.__call__(mox.Func(IsNode(0)), 0)
+    mock_visit.__call__(mox.Func(IsNode(1)), 1)
+    mock_visit.__call__(mox.Func(IsNode(2)), 1)
+    mock_visit.__call__(mox.Func(IsNode(3)), 2)
+    mock_visit.__call__(mox.Func(IsNode(4)), 2)
+    mock_visit.__call__(mox.Func(IsNode(5)), 2)
+    mock_visit.__call__(mox.Func(IsNode(6)), 3)
     m.ReplayAll()
 
     tree.BreadthFirst(mock_visit)
@@ -501,17 +531,47 @@ class TestTree(unittest.TestCase):
 
     m = mox.Mox()
     mock_visit = m.CreateMockAnything()
-    mock_visit.__call__(mox.Func(IsNode(0)))
-    mock_visit.__call__(mox.Func(IsNode(1)))
-    mock_visit.__call__(mox.Func(IsNode(2)))
-    mock_visit.__call__(mox.Func(IsNode(3)))
-    mock_visit.__call__(mox.Func(IsNode(4)))
-    mock_visit.__call__(mox.Func(IsNode(5)))
-    mock_visit.__call__(mox.Func(IsNode(6)))
+    mock_visit.__call__(mox.Func(IsNode(0)), 0)
+    mock_visit.__call__(mox.Func(IsNode(1)), 1)
+    mock_visit.__call__(mox.Func(IsNode(2)), 1)
+    mock_visit.__call__(mox.Func(IsNode(3)), 2)
+    mock_visit.__call__(mox.Func(IsNode(4)), 2)
+    mock_visit.__call__(mox.Func(IsNode(5)), 2)
+    mock_visit.__call__(mox.Func(IsNode(6)), 3)
     m.ReplayAll()
 
     tree.IterativeDeepening(mock_visit)
     m.VerifyAll()
+
+  def test_Linearize(self):
+    tree = Tree()
+    tree.Insert(Node(0))
+    tree.Insert(Node(-1))
+    tree.Insert(Node(5))
+    tree.Insert(Node(-2))
+    tree.Insert(Node(1))
+    tree.Insert(Node(10))
+    tree.Insert(Node(2))
+    self.assertEqual([-2,-1,0,1,2,5,10], tree.Linearize())
+
+  def test_balanced(self):
+    tree = Tree()
+    self.assertTrue(tree.balanced)
+    
+    tree.Insert(Node(0))
+    self.assertTrue(tree.balanced)
+
+    tree.Insert(Node(-1))
+    self.assertTrue(tree.balanced)
+
+    tree.Insert(Node(5))
+    self.assertTrue(tree.balanced)
+    
+    tree.Insert(Node(10))
+    self.assertTrue(tree.balanced)
+
+    tree.Insert(Node(11))
+    self.assertFalse(tree.balanced)
 
 
 def IsNode(value):
