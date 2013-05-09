@@ -1,6 +1,6 @@
 
 def LongestSubsequence(a, b):
-  subresults = [[None for _ in xrange(len(b))] for _ in xrange(len(a))]
+  subresults = [[None for _ in b] for _ in a]
   solution = InternalLongestSubsequence(a, b, len(a), len(b), subresults)
   print '{} vs {} subresults are {}'.format(a, b, PrettyPrint(subresults))
   return solution
