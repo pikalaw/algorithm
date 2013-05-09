@@ -25,6 +25,7 @@ def LongestNondecreasingSubsequence(xs):
 
 
 def FindGreatestLIS(vs, x):
+  """Binary search to find the greatest index z such that vs[i] <= x."""
   i, j = 0, len(vs)
   while True:
     k = (i+j)/2
