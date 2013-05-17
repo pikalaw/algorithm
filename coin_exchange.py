@@ -40,6 +40,23 @@ def _RecursiveExchangeCoins(amount, coins, results):
   return min_result
 
 
+def IterativeExchangeCoins(amount, coins):
+  results = []
+  results[0] = Result(0, 0, None)
+  for subamount in xrange(amount + 1):
+    min_coin_count = sys.maxint
+    min_result = results[0]
+    for coin in coins:
+      if coin <= subamount:
+        remaining_result = results[subamount - coin]
+        coin_count = 1 + remaining_result.coin_count
+        if coin_count < min_coin_count:
+          min_coin_count = coin_count
+          min_result = Result(coin, coin_count, remaining_result)
+    results[subamount] = min_result
+  return ComposeSolution(results[-1])
+
+
 def ComposeSolution(result):
   coins = []
   while result:
@@ -61,6 +78,10 @@ class TestExchangeCoins(unittest.TestCase):
         ([1, 5, 10, 25], 99, [1, 1, 1, 1, 10, 10, 25, 25, 25]),
     ]
       
-  def test_Example(self):
+  def test_Recursive(self):
     for test in self.tests:
       self.assertEqual(test[2], RecursiveExchangeCoins(test[1], test[0]))
+      
+  def test_Iterative(self):
+    for test in self.tests:
+      self.assertEqual(test[2], IterativeExchangeCoins(test[1], test[0]))
