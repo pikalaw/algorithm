@@ -32,6 +32,8 @@ def AllShortestDistance(graph):
     # vertices in {V_n : 0 <= n < k} only.
     for i in xrange(V):
       for j in xrange(V):
+        # V_k introduce another path candidate for shortest path between V_i
+        # and V_j.
         new_route = d[i][k] + d[k][j]
         if new_route < d[i][j]:
           d[i][j] = new_route
