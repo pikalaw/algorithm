@@ -72,6 +72,10 @@ class TestHasUniversalSink(unittest.TestCase):
         (False, [[0, 0, 1],
                  [0, 0, 1],
                  [1, 1, 1]]),
+        (False, [[0, 0, 1, 1],
+                 [0, 0, 0, 1],
+                 [1, 1, 0, 0],
+                 [0, 0, 0, 0]]),
     ]
 
   def test_all(self):
