@@ -56,12 +56,11 @@ def SimplePathCount(dag, from_node_id, to_node_id):
 
   sorted_list = TopologicalSort(dag)
 
-  for i in xrange(sorted_list.index(to_node_id) - 1, -1, -1):
+  for i in xrange(sorted_list.index(to_node_id) - 1, 
+                  sorted_list.index(from_node_id) - 1, -1):
     this_node_id = sorted_list[i]
     for next_node_id in dag.nodes[this_node_id]:
       path_count[this_node_id] += path_count[next_node_id]
-    if this_node_id == from_node_id:
-      break
 
   return path_count[from_node_id]
 
