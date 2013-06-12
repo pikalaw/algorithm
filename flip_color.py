@@ -32,15 +32,25 @@ import unittest
 class TestFlipColor(unittest.TestCase):
 
   def test_Example(self):
-    self.assertEqual('', MinFlipColor(''))
-    self.assertEqual('0', MinFlipColor('B'))
-    self.assertEqual('0', MinFlipColor('W'))
-    self.assertEqual('10', MinFlipColor('WW'))
-    self.assertEqual('01', MinFlipColor('BB'))
-    self.assertEqual('010', MinFlipColor('WWW'))
-    self.assertEqual('010', MinFlipColor('BBB'))
-    self.assertEqual('0100', MinFlipColor('BBBW'))
-    self.assertEqual('00000', MinFlipColor('WBWBW'))
-    self.assertEqual('010101010', MinFlipColor('WWWWWWWWW'))
+    self.assertEqual('',
+        MinFlipColor(''))
+    self.assertEqual('0',
+        MinFlipColor('B'))
+    self.assertEqual('0',
+        MinFlipColor('W'))
+    self.assertEqual('10',
+        MinFlipColor('WW'))
+    self.assertEqual('01',
+        MinFlipColor('BB'))
+    self.assertEqual('010',
+        MinFlipColor('WWW'))
+    self.assertEqual('010',
+        MinFlipColor('BBB'))
+    self.assertEqual('0100',
+        MinFlipColor('BBBW'))
+    self.assertEqual('00000',
+        MinFlipColor('WBWBW'))
+    self.assertEqual('010101010',
+        MinFlipColor('WWWWWWWWW'))
     self.assertEqual('1000011111001000000011100',
-                     MinFlipColor('BBWBWWBWBWWBBBWBWBWBBWBBW'))
+        MinFlipColor('BBWBWWBWBWWBBBWBWBWBBWBBW'))
