@@ -21,10 +21,7 @@ def MinFlipWithStartColor(cards, start_color):
   flips = []
   color = start_color
   for card_color in cards:
-    if card_color != color:
-      flips.append(1)
-    else:
-      flips.append(0)
+    flips.append(1 if card_color != color else 0)
     color = FlipColor(color)
   return flips
 
