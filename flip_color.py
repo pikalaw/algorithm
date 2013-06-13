@@ -8,22 +8,14 @@ def MinFlipColor(cards):
   Returns:
     String of 1 and 0 where 1 = flip 0 = no flip. Same length as `cards`.
   """
-  w = MinFlipWithStartColor(cards, 'W')
-  b = MinFlipWithStartColor(cards, 'B')
-  return ''.join([str(x) for x in (w if sum(w) < sum(b) else b)])
-
-
-def FlipColor(color):
-  return 'W' if color == 'B' else 'B'
-
-
-def MinFlipWithStartColor(cards, start_color):
   flips = []
-  color = start_color
-  for card_color in cards:
-    flips.append(1 if card_color != color else 0)
-    color = FlipColor(color)
-  return flips
+  colors = 'BW'
+  for i, card_color in enumerate(cards):
+    flips.append(1 if card_color == colors[i % 2] else 0)
+  if sum(flips) <= len(cards) / 2:
+    return ''.join(['1' if x else '0' for x in flips])
+  else:
+    return ''.join(['0' if x else '1' for x in flips])
 
 
 import unittest
@@ -38,9 +30,9 @@ class TestFlipColor(unittest.TestCase):
         MinFlipColor('B'))
     self.assertEqual('0',
         MinFlipColor('W'))
-    self.assertEqual('10',
-        MinFlipColor('WW'))
     self.assertEqual('01',
+        MinFlipColor('WW'))
+    self.assertEqual('10',
         MinFlipColor('BB'))
     self.assertEqual('010',
         MinFlipColor('WWW'))
