@@ -1,7 +1,9 @@
 
 def MinEggDrops(floors, eggs):
-  """Returns all solutions for the minimum drops for m floors and n eggs where
+  """Returns the minimum egg drops from m floors with n eggs where
   1 <= m <= floors and 1 <= n <= eggs.
+
+  See http://en.wikipedia.org/wiki/Dynamic_programming#Egg_dropping_puzzle
 
   Args:
     floors: Number of floors.
