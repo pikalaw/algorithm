@@ -8,14 +8,11 @@ def MinFlipColor(cards):
   Returns:
     String of 1 and 0 where 1 = flip 0 = no flip. Same length as `cards`.
   """
-  flips = []
   colors = 'BW'
-  for i, card_color in enumerate(cards):
-    flips.append(1 if card_color == colors[i % 2] else 0)
-  if sum(flips) <= len(cards) / 2:
-    return ''.join(['1' if x else '0' for x in flips])
-  else:
-    return ''.join(['0' if x else '1' for x in flips])
+  flips = [1 if color == colors[i % 2] else 0 for i, color in enumerate(cards)]
+  return ''.join(
+    ['1' if x else '0' for x in flips] if sum(flips) <= len(cards) / 2 else
+    ['0' if x else '1' for x in flips])
 
 
 import unittest
