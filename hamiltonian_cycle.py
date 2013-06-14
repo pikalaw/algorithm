@@ -21,6 +21,8 @@ class Graph(object):
     
 
 def HamiltonianCycleGraph(graph, root_id):
+  if root_id not in graph.nodes:
+    return None
   path = DFSGraph(graph, root_id, root_id, len(graph.nodes))
   if path is not None:
     return [root_id] + path
@@ -95,5 +97,8 @@ class TestHamiltonianCycleGraph(unittest.TestCase):
     graph.nodes[0] = Node(0)
     self.assertEqual([0], HamiltonianCycleGraph(graph, 0))
 
+  def test_EmptyGraph(self):
+    self.assertIsNone(HamiltonianCycleGraph(Graph(), 0))
+
   def test_NoSuchNode(self):
-    self.assertIsNone(HamiltonianCycleGraph(self.BadGraph(), 99))
+    self.assertIsNone(HamiltonianCycleGraph(self.GoodGraph(), 99))
