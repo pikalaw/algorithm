@@ -94,3 +94,6 @@ class TestHamiltonianCycleGraph(unittest.TestCase):
     graph = Graph()
     graph.nodes[0] = Node(0)
     self.assertEqual([0], HamiltonianCycleGraph(graph, 0))
+
+  def test_NoSuchNode(self):
+    self.assertIsNone(HamiltonianCycleGraph(self.BadGraph(), 99))
