@@ -17,8 +17,7 @@ def SolveSudoku(grid):
 
 def _Solve(grid, solution, i, j):
   p, q = NextCell(i, j)
-  candidates = CandidatesAt(solution, i, j)
-  for candidate in candidates:
+  for candidate in CandidatesAt(solution, i, j):
     solution[i][j] = candidate
     if p is None or _Solve(grid, solution, p, q):
       return True
