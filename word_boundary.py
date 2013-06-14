@@ -2,6 +2,7 @@
 def IsWord(word):
   return word in [
     'a',
+    'am',
     'man',
     'is',
     'eats',
