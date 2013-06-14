@@ -21,7 +21,11 @@ class Graph(object):
     
 
 def HamiltonianCycleGraph(graph, root_id):
-  return DFSGraph(graph, root_id, root_id, len(graph.nodes))
+  path = DFSGraph(graph, root_id, root_id, len(graph.nodes))
+  if path:
+    return [root_id] + path
+  else:
+    return None
 
 
 def DFSGraph(graph, node_id, root_id, length_to_root):
@@ -77,7 +81,7 @@ class TestHamiltonianCycleGraph(unittest.TestCase):
     return graph
 
   def test_GoodGraph(self):
-    self.assertEqual([1, 2, 4, 3, 0],
+    self.assertEqual([0, 1, 2, 4, 3, 0],
                      HamiltonianCycleGraph(self.GoodGraph(), 0))
 
   def test_BadGraph(self):
