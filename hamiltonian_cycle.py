@@ -21,10 +21,10 @@ class Graph(object):
     
 
 def HamiltonianCycleGraph(graph, root_id):
-  return DFS(graph, root_id, root_id, len(graph.nodes))
+  return DFSGraph(graph, root_id, root_id, len(graph.nodes))
 
 
-def DFS(graph, node_id, root_id, length_to_root):
+def DFSGraph(graph, node_id, root_id, length_to_root):
   node = graph.nodes[node_id]
   node.visited = True
   try:
@@ -32,16 +32,12 @@ def DFS(graph, node_id, root_id, length_to_root):
       if next_node_id == root_id and length_to_root == 1:
         return [root_id]
       if not graph.nodes[next_node_id].visited:
-        next_path = DFS(graph, next_node_id, root_id, length_to_root - 1)
+        next_path = DFSGraph(graph, next_node_id, root_id, length_to_root - 1)
         if next_path:
           return [next_node_id] + next_path
     return None
   finally:
     node.visited = False
-
-
-def HamiltonianCycleMatrix(matrix):
-  pass
 
 
 import unittest
@@ -86,9 +82,3 @@ class TestHamiltonianCycleGraph(unittest.TestCase):
 
   def test_BadGraph(self):
     self.assertIsNone(HamiltonianCycleGraph(self.BadGraph(), 0))
-
-
-class TestHamiltonianCycleMatrix(unittest.TestCase):
-
-  def test_Example(self):
-    pass
