@@ -1,5 +1,3 @@
-import sys
-
 
 def ShortestCodebook(digits):
   """Produce the shortest codebook for codes of a fixed number of  digits.
@@ -39,6 +37,7 @@ def AdjacentCodes(code, num_codes):
     yield base + i
 
 
+import sys
 import unittest
 
 
