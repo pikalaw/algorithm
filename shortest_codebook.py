@@ -26,7 +26,6 @@ def DFS(code, visited, num_codes_reached, num_codes):
       codebook = DFS(next_code, visited, num_codes_reached, num_codes)
       if codebook is not None:
         return [code % 10] + codebook
-
   visited[code] = False
   return None
 
