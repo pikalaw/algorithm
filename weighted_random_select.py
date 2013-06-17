@@ -1,7 +1,29 @@
 import random
 
 
-class Node(object):
+class WeightedList(object):
+
+  def __init__(self, weights):
+    for i in xrange(1, len(weights)):
+      weights[i] += weights[i-1]
+    self.weights = weights
+
+  def Random(self):
+    key = random.uniform(0, self.weights[-1])
+    left, right = 0, len(self.weights) 
+    while True:
+      mid = (left + right) / 2
+      if key < self.weights[mid - 1] if mid > 0 else 0.:
+        right = mid
+        continue
+      elif key >= self.weights[mid]:
+        left = mid + 1
+        continue
+      else:
+        return mid
+
+
+class WeightedNode(object):
 
   def __init__(self, key, weight=1):
     self.key = key
@@ -18,12 +40,12 @@ class Node(object):
       if self.left:
         self.left.Insert(key, weight)
       else:
-        self.left = Node(key, weight)
+        self.left = WeightedNode(key, weight)
     else:
       if self.right:
         self.right.Insert(key, weight)
       else:
-        self.right = Node(key, weight)
+        self.right = WeightedNode(key, weight)
 
   def Random(self):
     key = random.uniform(0, self.weight)
@@ -54,10 +76,26 @@ import collections
 import unittest
 
 
-class TestWeightedBST(unittest.TestCase):
+class TestWeightList(unittest.TestCase):
 
   def test_Example(self):
-    root = Node(50) 
+    wa = WeightedList([1, 2, 3])
+    self.assertEqual([1, 3, 6], wa.weights)
+
+    TRIALS = 100000
+    counts = collections.defaultdict(int)
+    for i in xrange(TRIALS):
+      counts[wa.Random()] += 1
+
+    self.assertAlmostEqual(1/6., counts[0]/float(TRIALS), places=2)
+    self.assertAlmostEqual(2/6., counts[1]/float(TRIALS), places=2)
+    self.assertAlmostEqual(3/6., counts[2]/float(TRIALS), places=2)
+
+
+class TestWeightedNode(unittest.TestCase):
+
+  def test_Example(self):
+    root = WeightedNode(50) 
     root.Insert(25) 
     root.Insert(75) 
     root.Insert(75) 
@@ -69,7 +107,9 @@ class TestWeightedBST(unittest.TestCase):
     root.Insert(30) 
     print '\n', root
 
-    TRIALS = 100000
+    self.assertEqual(10, root.weight)
+
+    TRIALS = 200000
     counts = collections.defaultdict(int)
     for i in xrange(TRIALS):
       counts[root.Random()] += 1
