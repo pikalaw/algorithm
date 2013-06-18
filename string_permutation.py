@@ -1,18 +1,25 @@
 
 def StringPermutation(s):
-  for p in Permutation(list(s)):
+  s = list(s)
+  s.sort()
+  for p in Permutation(s):
     yield ''.join(p)
 
 
 def Permutation(s):
+  # s must be sorted for duplicates to be ignored.
   if len(s) <= 1:
     yield s
   else:
+    last = None
     for i in xrange(len(s)):
+      if s[i] == last:
+        continue
       Swap(s, 0, i)
       for p in Permutation(s[1:]):
         yield [s[0]] + p
       Swap(s, 0, i)
+      last = s[i]
     
 
 def Swap(a, i, j):
@@ -33,5 +40,5 @@ class TestStringPermutation(unittest.TestCase):
 
   def test_Duplicate(self):
     actual = list(StringPermutation('abb'))
-    expected = ['abb', 'abb', 'bab', 'bba', 'bba', 'bab'] 
+    expected = ['abb', 'bab', 'bba'] 
     self.assertEqual(actual, expected)
