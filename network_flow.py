@@ -129,3 +129,22 @@ class TestNetworkFlow(unittest.TestCase):
     network.Link('v3', 't', m)
     network.Link('v4', 't', m)
     self.assertEqual(2*m + 1, network.MaximumFlow('s', 't'))
+
+  def test_MinCut(self):
+    n = NetworkFlow()
+    n.Link('s', 'L1', 2);
+    n.Link('s', 'L2', 2);
+    n.Link('s', 'L3', 3);
+    n.Link('s', 'L4', 2);
+    n.Link('L1', 'R3', 999);
+    n.Link('L2', 'R3', 999);
+    n.Link('L3', 'R1', 999);
+    n.Link('L3', 'R2', 999);
+    n.Link('L3', 'R3', 999);
+    n.Link('L3', 'R4', 999);
+    n.Link('L4', 'R3', 999);
+    n.Link('R1', 't', 2);
+    n.Link('R2', 't', 2);
+    n.Link('R3', 't', 5);
+    n.Link('R4', 't', 2);
+    self.assertEqual(8, n.MaximumFlow('s', 't'))
