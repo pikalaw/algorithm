@@ -36,3 +36,6 @@ nosetests.xml
 
 # experimental
 experimental/
+
+# Mac stuff
+.DS_Store
