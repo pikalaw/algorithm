@@ -135,6 +135,7 @@ tests = [
     ('abc', 'baa'),
     ('aab', 'abc'),
     ('abc', 'bcb'),
+    ('abcdefg', 'bcdefga'),
 ]
 
 print('A*Search approach')
