@@ -14,25 +14,12 @@ def is_square_matrix(m: Matrix):
 
 
 class GainPath(object):
-  def __init__(self, city=None, gain=None):
-    self.next_city = city
-    self.gain = gain
+  def __init__(self):
+    self.path = []
+    self.gain = 0
   
   def __repr__(self):
-    return '(next:{} gain:{})'.format(self.next_city, self.gain)
-
-
-def construct_path(gain_paths: Dict[int, Dict[int, GainPath]], start_city: int):
-  path = [start_city]
-  time = 0
-  current_city = start_city
-  assert len(gain_paths) > 0
-  while time + 1 < len(gain_paths[0]):
-    next_city = gain_paths[current_city][time].next_city
-    path.append(next_city)
-    current_city = next_city
-    time += 1
-  return path
+    return '(gain:{} path:{})'.format(self.gain, self.path)
 
 
 def max_profit_route(revenue: Matrix, travel_cost: Matrix):
@@ -43,32 +30,36 @@ def max_profit_route(revenue: Matrix, travel_cost: Matrix):
   num_times = len(revenue[0])
   num_cities = len(revenue)
 
-  gain_paths = defaultdict(lambda: defaultdict(GainPath))
+  start_time = num_times - 1
+  gain_paths = [GainPath() for _ in range(num_cities)]
 
-  # First round of dynamic programming..
-  for c in range(num_cities):
-    gain_paths[c][num_times - 1] = GainPath(
-        city=None, gain=revenue[c][num_times - 1])
+  max_gain = gain_paths[0].gain = revenue[0][start_time]
+  max_path = gain_paths[0].path = [0]
 
-  for t in range(num_times - 2, -1, -1):
-    for c in range(num_cities):
-      gain = -99
-      for d in range(num_cities):
-        this_gain = revenue[c][t] + gain_paths[d][t+1].gain - travel_cost[c][d]
-        if this_gain > gain:
-          gain_paths[c][t] = GainPath(city=d, gain=this_gain)
-          gain = this_gain
+  for i in range(1, num_cities):
+    gain_paths[i].gain = revenue[i][start_time]
+    gain_paths[i].path = [i]
+    if gain_paths[i].gain > max_gain:
+      max_gain = gain_paths[i].gain
+      max_path = gain_paths[i].path
 
-  # Construct the path.
-  i = 0
-  for j in range(i+1, len(gain_paths)):
-    if gain_paths[j][0].gain > gain_paths[i][0].gain:
-      i = j
-  return gain_paths[i][0].gain, construct_path(gain_paths, i)
+  for start_time in range(num_times - 2, -1, -1):
+    new_gain_paths = [GainPath() for _ in range(num_cities)]
+    for city in range(num_cities):
+      for next_city in range(num_cities):
+        test_gain = (revenue[city][start_time] + gain_paths[next_city].gain -
+            travel_cost[city][next_city])
+        if test_gain > new_gain_paths[city].gain:
+          max_gain = new_gain_paths[city].gain = test_gain
+          max_path = new_gain_paths[city].path = (
+              [city] + gain_paths[next_city].path)
+    gain_paths = new_gain_paths
+
+  return max_gain, max_path
 
 
 print(max_profit_route(
     [[1,2,99],
-     [4,5,6]],
+     [4,99,6]],
     [[0,2],
      [3,0]]))
