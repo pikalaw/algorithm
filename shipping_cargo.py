@@ -13,6 +13,8 @@ class Packing(object):
 
 
 def shipping_schedule(cargo_weights: List[int], num_days):
+  steps = 0
+
   # The m-th element is the packing strategy for cargos[:i] due in i-1 days at
   # the start of the i-loop but due in i days at the end of i-loop.
   # i = 1.
@@ -21,8 +23,7 @@ def shipping_schedule(cargo_weights: List[int], num_days):
   for j in range(1, len(cargo_weights)+1):
     last_package_weight += cargo_weights[j-1]
     min_packings[j] = Packing([j], last_package_weight)
-
-  steps = 0
+    steps += 1
 
   # i > 1.
   for i in range(2, num_days+1):
